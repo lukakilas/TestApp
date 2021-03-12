@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias FetchUserDetailsGatewayHandler = (_ result: Result<UserDetails, Error>) -> Void
+typealias FetchUserDetailsGatewayHandler = (_ result: Result<ApiUserDetailsEntity, Error>) -> Void
 
 protocol ApiFetchUserDetailsGateway {
     func fetchDetails(with userName: String, completion: @escaping FetchUserDetailsGatewayHandler)
@@ -15,9 +15,9 @@ protocol ApiFetchUserDetailsGateway {
 
 class ApiFetchUserDetailsGatewayImpl: ApiFetchUserDetailsGateway {
     func fetchDetails(with userName: String, completion: @escaping FetchUserDetailsGatewayHandler) {
-        let urlString = "\(Constants.baseUrl)/users/\(userName)"
+        let urlString = "\(Constants.baseUrl)/\(userName)"
         guard let url = URL(string: urlString) else { return }
-        Service.fetchAndParse(from: url, modelType: UserDetails.self) { (result) in
+        Service.fetchAndParse(from: url, modelType: ApiUserDetailsEntity.self) { (result) in
             switch result {
             case .success(let userDetails):
                 completion(.success(userDetails))

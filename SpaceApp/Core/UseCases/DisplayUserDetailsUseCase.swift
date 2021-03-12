@@ -25,7 +25,7 @@ class DisplayUserDetailsUseCaseImpl: DisplayUserDetailsUseCase {
         gateway.fetchDetails(with: userName) { (result) in
             switch result {
             case .success(let details):
-                completion(.success(details))
+                completion(.success(details.convertToCoreDetailsModel))
             case .failure(let error):
                 completion(.failure(error))
             }

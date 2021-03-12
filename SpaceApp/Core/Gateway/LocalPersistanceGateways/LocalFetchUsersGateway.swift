@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-typealias LocalUsersGatewayHandler = (_ result: Result<[User], Error>) -> Void
+typealias LocalUsersGatewayHandler = (_ result: Result<[UserCoreDataEntity], Error>) -> Void
 
 protocol LocalFetchUsersGateway {
     func fetchUsers(completion: @escaping LocalUsersGatewayHandler)
@@ -19,7 +19,7 @@ class LocalFetchUsersGatewayImplementation: LocalFetchUsersGateway {
         let request: NSFetchRequest<UserCoreDataEntity> = UserCoreDataEntity.fetchRequest()
         do {
             let dataBaseUsers = try PersistantManager.context.fetch(request)
-            let users = dataBaseUsers.compactMap({$0.convertToUserModel})
+            let users = dataBaseUsers.compactMap({$0})
             completion(.success(users))
         }
         catch {

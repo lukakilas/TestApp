@@ -15,9 +15,11 @@ protocol DownloadAvatarUseCase {
 class DownloadAvatarUseCaseImpl: DownloadAvatarUseCase {
     
     private let urlString: String
+    private let saveAvatarGateway: SaveAvatarGateway?
     
-    init(urlString: String) {
+    init(urlString: String, saveAvatarGateway: SaveAvatarGateway?) {
         self.urlString = urlString
+        self.saveAvatarGateway = saveAvatarGateway
     }
     
     func download(completion: @escaping (UIImage) -> Void) {
@@ -29,22 +31,8 @@ class DownloadAvatarUseCaseImpl: DownloadAvatarUseCase {
         Service.downloadImageAndCache(from: url) { imageData in
             guard let image = UIImage(data: imageData) else { return }
             imageCache.setObject(image, forKey: NSString(string: self.urlString))
-            self.saveImageDataToDisk(imageData, for: self.urlString)
+            self.saveAvatarGateway?.saveImageDataToDisk(imageData, for: self.urlString)
             completion(image)
-        }
-    }
-    
-    private func saveImageDataToDisk(_ imageData: Data, for imageUrlString: String) {
-        let userFetchRequest: NSFetchRequest<UserCoreDataEntity> = UserCoreDataEntity.fetchRequest()
-        do
-        {
-            let result = try PersistantManager.context.fetch(userFetchRequest)
-            let model = result.first(where: {$0.imageUrl == imageUrlString })
-            model?.setValue(imageData, forKey: "image")
-            PersistantManager.saveContext()
-        }
-        catch {
-            print("error")
         }
     }
 }
